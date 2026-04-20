@@ -1,0 +1,145 @@
+\RequirePackage{plautopatch,fix-cm}
+\documentclass[uplatex,dvipdfmx,a4paper]{jsarticle}
+\usepackage[haranoaji]{pxchfon}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[dvipdfmx]{graphicx,color}
+\usepackage{amsmath,amssymb,bm,braket,mathtools,mathrsfs,empheq,times,caption,cite}
+\usepackage[top=25truemm,bottom=25truemm,left=20truemm,right=20truemm]{geometry} %余白の設定
+\usepackage{setspace}
+% 全体の行間調整
+\renewcommand{\baselinestretch}{0.85}
+% 図の名前を変更
+\renewcommand{\figurename}{図.}
+% 表の名前を変更
+\renewcommand{\tablename}{Table.}
+% 参考文献の名前を変更
+\renewcommand{\refname}{参考文献}
+% 図と図の間のスペース
+\setlength\floatsep{0truemm}
+% 本文と図の間のスペース
+\setlength\textfloatsep{1truemm}
+% \setlength\textfloatsep{0truemm}
+% 本文中の図のスペース
+\setlength\intextsep{0pt}
+% 図とキャプションの間のスペース
+\setlength\abovecaptionskip{0truemm}
+% 数式上下の空白設定
+\abovedisplayskip=4pt
+\belowdisplayskip=4pt
+% \abovedisplayskip=0pt
+% \belowdisplayskip=0pt
+
+\newcommand{\tabref}[1]{Table~\ref{#1}}
+\newcommand{\equref}[1]{式~(\ref{#1})}
+\newcommand{\figref}[1]{図.~\ref{#1}}
+
+\usepackage{tcolorbox}
+\usepackage{titlesec}
+
+\titleformat*{\section}{\large\bfseries}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\polylog}{\operatorname{polylog}}
+\newcommand{\diag}{\operatorname{diag}}
+% \everymath{\displaystyle} %数式を常にディスプレイスタイルにする
+
+% sectionの前後の余白を詰める
+\makeatletter
+\renewcommand{\section}{%
+    \@startsection{section}{1}{\z@}%
+    {0.3\Cvs}{0.3\Cvs}%
+    {\normalfont\normalsize\headfont\raggedright}%
+}
+\makeatother
+% subsectionの前後の余白を詰める
+\makeatletter
+\renewcommand{\subsection}{%
+    \@startsection{subsection}{1}{\z@}%
+    {0.3\Cvs}{0.3\Cvs}%
+    {\normalfont\normalsize\headfont\raggedright}%
+    % {\normalfont\large\headfont\raggedright}%
+}
+\makeatother
+% subsubsectionの前後の余白を詰める
+\makeatletter
+\renewcommand{\subsubsection}{%
+    \@startsection{subsubsection}{1}{\z@}%
+    {.25\Cvs}%
+    {.25\Cvs}%
+    {\headfont}
+}
+\makeatother
+
+% 参考　http://www.ice.is.kit.ac.jp/~umehara/misc/comp/latex.html
+\renewcommand{\topfraction}{1.2} %図表がページ上部を占める割合の上限
+\renewcommand{\bottomfraction}{1.0} %図表がページ下部を占める割合の上限
+\renewcommand{\dbltopfraction}{1.0} %二段組のとき段抜き図表がページ上部を占める割合の上限
+\renewcommand{\textfraction}{0.01} % 文章がページを占める割合の下限
+\renewcommand{\floatpagefraction}{1.0} % 図表がページを占める割合の上限
+\renewcommand{\dblfloatpagefraction}{1.0} %二段組のとき段抜き図表がページを占める割合の上限
+\setcounter{topnumber}{10} %ページ上部を占める図表の数の上限
+\setcounter{bottomnumber}{10} %ページ下部を占める図表の数の上限
+\setcounter{totalnumber}{20} %ページを占める図表の数の上限
+
+\usepackage{url}
+\usepackage[breaklinks=false,bookmarksnumbered=true,dvipdfmx]{hyperref} %ハイパーリンク
+% \hypersetup{%
+% bookmarksdepth=4,%
+% bookmarksnumbered=true,%
+% colorlinks=false,%
+% urlcolor=magenta,%
+% citecolor=green,%
+% linkcolor=red,} %リンクの色
+% 印刷時
+\hypersetup{%
+bookmarksdepth=4,%
+bookmarksnumbered=true,%
+colorlinks=true,%
+urlcolor=black,%
+citecolor=black,%
+linkcolor=black,} %リンクの色
+
+
+\begin{document}
+\twocolumn[
+\the\year 年度春合宿研究要旨
+\hfill 指導教員 : 村松 眞由 准教授\\
+\begin{spacing}{0.1}
+  \centering
+  \textbf{\large 宇宙輸送機非破壊検査のための赤外線応力測定と機械学習に基づくCFRP欠陥推定}
+\end{spacing}
+\begin{flushright}
+    村松研究室 学部4年 佐藤瑞起
+  \end{flushright}
+]
+
+\section{研究背景・目的}
+炭素繊維強化プラスチック(CFRP)は高比剛性・軽量性を有し，宇宙輸送機構造への適用が進んでいる．一方で，層間剥離をはじめとする内部欠陥の検出は難しく，運用段階での高効率な非破壊検査が課題である\cite{nondestructive_testing}．
+近年は，表面主応力和分布(DSPSS)と機械学習を組み合わせた欠陥推定が報告されており，FEMデータに基づく推定の有効性が示されている\cite{cfrp_kojima}．しかし，宇宙輸送機構造を対象とし，実験由来データを学習過程に組み込んだ枠組みは十分に整理されていない．
+本研究では，宇宙輸送機非破壊検査のための赤外線応力測定と機械学習を統合し，シミュレーション中心の枠組みを実験統合型へ拡張することを目的とする．
+
+\section{理論}
+本研究では，CFRP構造のメッシュ表現と応力場情報を同時に扱うため，グラフ学習に基づく欠陥推定を想定する．
+代表的なグラフ畳み込みの更新は，隣接節点の情報を集約して節点特徴を更新する構造で表される\cite{gcn}:
+\begin{equation}
+z_i^{(l+1)} = \phi\left(\sum_{j \in N(i) \cup \{i\}} \frac{1}{\sqrt{\deg(i)\deg(j)}}W^{(l+1)}z_j^{(l)}\right)
+\end{equation}
+ここで，$z_i^{(l)}$は節点特徴，$W^{(l+1)}$は学習パラメータ，$\phi$は活性化関数である．
+また，有限要素解析結果の学習にグラフニューラルネットワークが有効であることが示されており，本研究のモデル設計の基盤とする\cite{gnn}．
+
+\section{方法}
+提案手法は，(i)FEM由来DSPSS，(ii)赤外線応力測定由来DSPSS，(iii)欠陥ラベルの3要素を統合して学習を行う．
+まずFEMデータを用いて基礎学習を行い，次に赤外線応力測定データを用いて実験条件への適応を行う．この二段階設計により，シミュレーションデータの量的優位性と実験データの現実性を両立する．
+入力は表面主応力和分布およびメッシュ関連情報，出力は欠陥位置(必要に応じて層情報を含む)とする．
+評価は推定精度に加えて，ノイズ耐性，実験条件変化に対する汎化性，および実験データとの整合性を確認する．
+
+\section{今後の予定}
+短期的には，宇宙輸送機構造を対象にした解析条件の固定と，赤外線応力測定データの前処理手順の確立を行う．
+次に，FEM事前学習モデルに対する実験データ適応を実施し，シミュレーション中心推定と実験統合推定の比較評価を進める．
+最終的には，宇宙輸送機非破壊検査への適用を意識した，実験統合型欠陥推定手法としての妥当性を検証する．
+
+
+\bibliographystyle{unsrt}
+\bibliography{references}
+\end{document}
