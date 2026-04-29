@@ -1,6 +1,7 @@
 *.synctex.gz
 .DS_Store
 tmp/
+references/
 
 # LaTeX build artifacts
 *.aux
