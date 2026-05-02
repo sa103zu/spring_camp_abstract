@@ -15,7 +15,7 @@
 
 ## GitHub Copilot へのレビュー指示
 
-> **Copilot へ**: 以下のチェックリストに基づき、このPRの変更が `tmp/latex_template_spring_camp/template.tex` の構成・記述ルールに準拠しているかを **日本語で** レビューしてください。問題がある場合は、該当箇所と具体的な修正案を示してください。
+> **Copilot へ**: 以下のチェックリストは村松研究室の春合宿要旨 LaTeX テンプレートの構成・記述ルールをまとめたものです。このPRの変更が各ルールに準拠しているかを **日本語で** レビューしてください。問題がある場合は、該当箇所と具体的な修正案を示してください。
 
 ### ドキュメントクラス・パッケージ
 
@@ -24,6 +24,8 @@
 - [ ] `pxchfon`（haranoaji）, `fontenc`（T1）, `inputenc`（utf8）, `lmodern` が読み込まれているか
 - [ ] `amsmath`, `amssymb`, `bm`, `braket`, `mathtools`, `mathrsfs`, `empheq`, `times`, `caption`, `cite` が読み込まれているか
 - [ ] `geometry` に `top=25truemm, bottom=25truemm, left=20truemm, right=20truemm` が設定されているか
+- [ ] `hyperref` が `[breaklinks=false,bookmarksnumbered=true,dvipdfmx]` オプション付きで読み込まれているか
+- [ ] `hyperref` の印刷用カラー設定（`colorlinks=true`, `urlcolor=black`, `citecolor=black`, `linkcolor=black`）が `\hypersetup{}` で指定されているか
 
 ### レイアウト・スペーシング設定
 
@@ -36,8 +38,8 @@
 ### カスタムコマンド
 
 - [ ] `\figref{}`, `\equref{}`, `\tabref{}` が定義されているか
-- [ ] `\red{}`, `\polylog`, `\diag` が定義されているか
-- [ ] 図・数式・表の参照に `\figref{}`, `\equref{}`, `\tabref{}` が統一して使われているか
+- [ ] `\red{}` が定義されているか
+- [ ] 図・数式・表の参照に `\figref{}`, `\equref{}`, `\tabref{}` が統一して使われているか（`\ref{}` や `\eqref{}` の直接使用は NG）
 
 ### ページ構成・ヘッダー
 
@@ -55,7 +57,7 @@
 ### 表記法
 
 - [ ] 物理量（変数）は数式モード（イタリック）で表記されているか
-- [ ] スカラーは `$a$`、ベクトルは `$\bm{a}$`（太字小文字）、2階テンソルは `$\bm{A}$`（太字大文字）で表記されているか
+- [ ] スカラーは `$a$`、ベクトルは `$\bm{a}$`（太字小文字）、2階テンソルは `$\bm{A}$`（太字大文字）、4階テンソルは `$\mathbb{A}$` で表記されているか
 - [ ] 単位は `$1~\mathrm{m/s}$` または `$a~[\mathrm{m/s}]$` 形式で表記されているか
 
 ### 数式
