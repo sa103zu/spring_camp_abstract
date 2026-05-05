@@ -156,10 +156,32 @@ z_i^{(l+1)} = \phi\left(\sum_{j \in N(i) \cup \{i\}} \frac{1}{\sqrt{\deg(i)\,\de
 ここで，$z_i^{(l)}$は$l$層目におけるノード$i$の特徴ベクトル，$N(i)$は$i$の隣接ノード集合，$\deg(i)$はノード$i$の次数，$W^{(l+1)}$は学習パラメータ，$\phi$は活性化関数である．本研究では，CFRP積層板の有限要素メッシュをグラフに変換し，各節点の表面主応力和を入力特徴量とすることで，幾何学的制約を緩めた形で欠陥推定モデルを構築する．
 
 \section{方法}
-提案手法は，(i)FEM由来DSPSS，(ii)赤外線応力測定由来DSPSS，(iii)欠陥ラベルの3要素を統合して学習を行う．
-まずFEMデータを用いて基礎学習を行い，次に赤外線応力測定データを用いて実験条件への適応を行う．この二段階設計により，シミュレーションデータの量的優位性と実験データの現実性を両立する．
-入力は表面主応力和分布およびメッシュ関連情報，出力は欠陥位置(必要に応じて層情報を含む)とする．
-評価は推定精度に加えて，ノイズ耐性，実験条件変化に対する汎化性，および実験データとの整合性を確認する．
+本研究では，FEM由来の表面主応力和分布(DSPSS)による事前学習と，赤外線応力測定により取得したDSPSSによるファインチューニングを組み合わせた二段階転移学習\cite{kojima2025_transfer}を，GNNベースの欠陥推定モデル\cite{nishioka2024_bthesis}に適用する．提案手法の全体構成を\figref{fig:flow}に示す．大量に生成可能なFEMデータで基礎特徴を学習し，少量の実験データで実験条件への適応を行うことで，学習データ量の確保と実験条件への適合性を両立する．
+
+\begin{figure*}[t]
+\setlength\abovecaptionskip{1truemm}
+\centering
+\fbox{\begin{minipage}{0.9\textwidth}\centering\vspace{18mm}[TODO: figures/flow\_proposed.pdf]\\Kojima 2025 由来 ``Flow of proposed inverse estimation method'' をCNN→GNN化\vspace{18mm}\end{minipage}}
+\caption{Flow of proposed inverse estimation method.}
+\label{fig:flow}
+\end{figure*}
+
+\subsection{FEM由来データの生成}
+学習データの主体となるDSPSSは，CFRP積層板を有限要素メッシュに離散化し，欠陥を含む条件下で弾性解析を行うことで取得する．層間剝離はせん断応力が伝播しない状態を再現するため，剝離面を構成する節点に二重節点を割り当てて表現する\cite{kojima2025_transfer}．荷重条件には赤外線応力測定の繰り返し荷重を模した一方向引張を与え，欠陥の挿入位置・サイズ・挿入層を変えた多数の条件を設定することで，学習データの多様性を確保する．得られたDSPSSには，赤外線応力測定で観測される熱ノイズやCFRP内部の樹脂と炭素繊維束の物性差に由来する模様を模倣する人工ノイズを付与する．
+
+\subsection{赤外線応力測定の実験条件}
+ファインチューニング用のDSPSSは，単純形状のCFRP積層板に対する赤外線応力測定により取得する．試験片は一方向強化複合材を擬似等方に積層した構成とし，欠陥として層間にテフロンシートを挿入したものと挿入しないものを用意する．実験装置は疲労試験装置と赤外線カメラで構成され，正弦波の繰り返し引張荷重を加えながら試験片表面の温度変化を記録する(\figref{fig:equipment})．取得した熱画像にロックイン処理を適用することで，環境ノイズを抑制したDSPSSを試験片表面で取得する．
+
+\begin{figure}[t]
+\setlength\abovecaptionskip{1truemm}
+\centering
+\fbox{\begin{minipage}{0.85\linewidth}\centering\vspace{16mm}[TODO: figures/equipment.pdf]\\Kojima 2025 fig5（実験装置写真）\vspace{16mm}\end{minipage}}
+\caption{Equipment used in infrared stress measurement.}
+\label{fig:equipment}
+\end{figure}
+
+\subsection{GNN欠陥推定モデルと二段階転移学習}
+欠陥推定モデルには，FEMメッシュをグラフに変換したデータ構造を入力とするGNNを用いる．節点を頂点，要素隣接関係をエッジとし，各節点のDSPSSを入力特徴量とする．出力は各節点に対する欠陥クラス(あり/なし)であり，必要に応じて挿入層情報も合わせて推定する構成を採る．学習は二段階で運用する．第一段階では人工ノイズを付与したFEM由来DSPSSでGNN全体を学習し，第二段階では事前学習済みモデルに対し，少量の赤外線応力測定DSPSSを用いて出力層側のパラメータを再学習する．評価には，欠陥の平面位置に関する一致率と挿入層に関する一致率の2指標を導入し，FEMのみで学習したモデルとの比較を通じて転移学習の効果を検証する方針とする．
 
 \section{今後の予定}
 短期的には，宇宙輸送機構造を対象にした解析条件の固定と，赤外線応力測定データの前処理手順の確立を行う．
