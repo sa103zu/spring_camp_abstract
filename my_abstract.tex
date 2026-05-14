@@ -1,0 +1,188 @@
+\RequirePackage{plautopatch,fix-cm}
+\documentclass[uplatex,dvipdfmx,a4paper]{jsarticle}
+\usepackage[haranoaji]{pxchfon}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[dvipdfmx]{graphicx,color}
+\usepackage{amsmath,amssymb,bm,braket,mathtools,mathrsfs,empheq,times,caption,cite}
+\usepackage[top=25truemm,bottom=25truemm,left=20truemm,right=20truemm]{geometry} %余白の設定
+\usepackage{setspace}
+% 全体の行間調整
+\renewcommand{\baselinestretch}{0.85}
+% 図の名前を変更
+\renewcommand{\figurename}{図.}
+% 表の名前を変更
+\renewcommand{\tablename}{Table.}
+% 参考文献の名前を変更
+\renewcommand{\refname}{参考文献}
+% 図と図の間のスペース
+\setlength\floatsep{0truemm}
+% 本文と図の間のスペース
+\setlength\textfloatsep{1truemm}
+% \setlength\textfloatsep{0truemm}
+% 本文中の図のスペース
+\setlength\intextsep{0pt}
+% 図とキャプションの間のスペース
+\setlength\abovecaptionskip{0truemm}
+% 数式上下の空白設定
+\abovedisplayskip=4pt
+\belowdisplayskip=4pt
+% \abovedisplayskip=0pt
+% \belowdisplayskip=0pt
+
+\newcommand{\tabref}[1]{Table~\ref{#1}}
+\newcommand{\equref}[1]{式~(\ref{#1})}
+\newcommand{\figref}[1]{図.~\ref{#1}}
+
+\usepackage{tcolorbox}
+\usepackage{titlesec}
+
+\titleformat*{\section}{\large\bfseries}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\polylog}{\operatorname{polylog}}
+\newcommand{\diag}{\operatorname{diag}}
+% \everymath{\displaystyle} %数式を常にディスプレイスタイルにする
+
+% sectionの前後の余白を詰める
+\makeatletter
+\renewcommand{\section}{%
+    \@startsection{section}{1}{\z@}%
+    {0.3\Cvs}{0.3\Cvs}%
+    {\normalfont\normalsize\headfont\raggedright}%
+}
+\makeatother
+% subsectionの前後の余白を詰める
+\makeatletter
+\renewcommand{\subsection}{%
+    \@startsection{subsection}{1}{\z@}%
+    {0.3\Cvs}{0.3\Cvs}%
+    {\normalfont\normalsize\headfont\raggedright}%
+    % {\normalfont\large\headfont\raggedright}%
+}
+\makeatother
+% subsubsectionの前後の余白を詰める
+\makeatletter
+\renewcommand{\subsubsection}{%
+    \@startsection{subsubsection}{1}{\z@}%
+    {.25\Cvs}%
+    {.25\Cvs}%
+    {\headfont}
+}
+\makeatother
+
+% 参考　http://www.ice.is.kit.ac.jp/~umehara/misc/comp/latex.html
+\renewcommand{\topfraction}{1.2} %図表がページ上部を占める割合の上限
+\renewcommand{\bottomfraction}{1.0} %図表がページ下部を占める割合の上限
+\renewcommand{\dbltopfraction}{1.0} %二段組のとき段抜き図表がページ上部を占める割合の上限
+\renewcommand{\textfraction}{0.01} % 文章がページを占める割合の下限
+\renewcommand{\floatpagefraction}{1.0} % 図表がページを占める割合の上限
+\renewcommand{\dblfloatpagefraction}{1.0} %二段組のとき段抜き図表がページを占める割合の上限
+\setcounter{topnumber}{10} %ページ上部を占める図表の数の上限
+\setcounter{bottomnumber}{10} %ページ下部を占める図表の数の上限
+\setcounter{totalnumber}{20} %ページを占める図表の数の上限
+
+\usepackage{url}
+\usepackage[breaklinks=false,bookmarksnumbered=true,dvipdfmx]{hyperref} %ハイパーリンク
+% \hypersetup{%
+% bookmarksdepth=4,%
+% bookmarksnumbered=true,%
+% colorlinks=false,%
+% urlcolor=magenta,%
+% citecolor=green,%
+% linkcolor=red,} %リンクの色
+% 印刷時
+\hypersetup{%
+bookmarksdepth=4,%
+bookmarksnumbered=true,%
+colorlinks=true,%
+urlcolor=black,%
+citecolor=black,%
+linkcolor=black,} %リンクの色
+
+
+\begin{document}
+\twocolumn[
+\the\year 年度春合宿研究要旨
+\hfill 指導教員 : 村松 眞由 准教授\\
+\begin{spacing}{0.1}
+  \centering
+  \textbf{\large 宇宙輸送機非破壊検査のための赤外線応力測定と機械学習に基づくCFRP欠陥推定}
+\end{spacing}
+\begin{flushright}
+    村松研究室 学部4年 佐藤瑞起
+  \end{flushright}
+]
+
+\section{研究背景・目的}
+\subsection{CFRPの宇宙輸送機器への応用}
+炭素繊維強化プラスチック(carbon-fiber-reinforced plastics, CFRP)は，高比剛性・軽量性から宇宙輸送機器の主要構造への適用が拡大している．特に段間構造や衛星フェアリングのような大規模・複雑形状では，運用段階での健全性評価を短時間かつ高信頼に行う検査基盤が，再使用化と低コスト化の要求下で求められる．一方で，CFRPは層間剝離などの内部損傷が表面観察のみでは把握しにくく，従来手法のみでの健全性保証には限界がある\cite{nonedestruction}．
+
+\subsection{非破壊検査と先行研究}
+宇宙輸送機器の非破壊検査では打音検査や超音波測定が広く用いられてきたが，検査コストと運用時の迅速性に改善余地がある\cite{nonedestruction}．これに対して赤外線応力測定は，繰り返し荷重下の表面温度変化から表面主応力和分布(DSPSS)を取得できる非接触計測として注目されている\cite{ultra_red}．DSPSSと機械学習を組み合わせた欠陥推定の先行研究は，方法論で以下の二系統に整理できる．
+
+第一に，畳み込みニューラルネットワーク(CNN)を用い，有限要素法(finite element method, FEM)由来DSPSSによる事前学習と赤外線応力測定データによるファインチューニングを組み合わせる二段階転移学習が提案されているが，対象は単純短冊形状に限定される\cite{kojima2025_transfer}．第二に，グラフニューラルネットワーク(GNN)の利用によりCNNが扱いにくい不規則メッシュや穴あき形状の試験片にも欠陥推定を適用できるが，検証はFEMデータのみで実験データとの統合は未着手である\cite{nishioka2024_bthesis,gnn}．
+
+\subsection{研究ギャップと本研究の目的}
+以上から，本研究領域には方法論的・応用的な空白が残されている．方法論的には，GNNベース欠陥推定と二段階転移学習を組み合わせる枠組みが未整備であり，両系統の長所を統合した上でのFEM-実験間ドメインギャップ低減手法と評価が確立されていない．応用的には，検証対象が単純形状・穴あき試験片までに留まり，宇宙輸送機器を意識した形状条件下での実験統合型検証が十分に行われていない．
+
+そこで本研究では，GNNによる不規則メッシュ対応の欠陥推定モデルに，FEM由来DSPSS事前学習と赤外線応力測定データによる適応の二段階転移学習を組み合わせ，宇宙輸送機器の非破壊検査に資するCFRP欠陥推定手法の構築を目的とする．
+
+\section{理論}
+
+\begin{figure*}[!tbp]
+\setlength\abovecaptionskip{1truemm}
+\centering
+\includegraphics[width=0.7\textwidth]{figures/flow_proposed_v2.pdf}
+\caption{Flow of proposed inverse estimation method.}
+\label{fig:flow}
+\end{figure*}
+
+\subsection{赤外線応力測定}
+弾性域かつ断熱状態にある物体では，繰り返し荷重下で生じる主応力和の変化と表面温度変化が比例関係を持つ熱弾性効果が現れる．Kelvinの理論によれば，温度変化$\Delta T$と主応力和の変化量$\Delta \bm{\sigma}$は次式の関係を満たす\cite{ultra_red}．
+\begin{equation}
+\Delta T = -k\,T\,\Delta \bm{\sigma}
+\label{eq:kelvin}
+\end{equation}
+ここで，$T$は絶対温度，$k$は材料固有の物性値である熱弾性率である．赤外線応力測定では，繰り返し荷重を加えながら赤外線カメラで取得した温度画像にロックイン処理を施すことで，環境ノイズや温度ドリフトの影響を抑え，試験体表面のDSPSSを非接触かつ広範囲に取得できる．
+
+\subsection{有限要素法}
+有限要素法は，内部仮想仕事と外部仮想仕事の釣り合いを表す仮想仕事の原理を弱形式の出発点とし，連続体の応力解析を離散化する数値解析手法であり，複雑形状や不均質材料を含む構造解析に広く用いられる．有限要素メッシュ上で支配方程式を解くことで，欠陥配置や荷重条件を任意に変えながら表面主応力和分布を網羅的に取得できる点が，赤外線応力測定では確保しがたい学習データの多様性を補完する手段として有効である．
+
+\subsection{グラフニューラルネットワーク}
+グラフニューラルネットワーク(GNN)は，グラフ上で隣接ノードからの情報を集約しながら節点特徴を更新するニューラルネットワークである．有限要素メッシュの節点・隣接関係をそのままグラフとして扱えるため，CNNが前提とする格子状入力の制約を持たず，不規則メッシュや複雑形状にも適用できる\cite{gnn}．代表的なグラフ畳み込みネットワーク(GCN)では，隣接ノードからの寄与を次数で正規化したうえで線形変換と活性化を施すことで節点特徴を更新する\cite{gcn}．
+\begin{equation}
+z_i^{(l+1)} = \phi\left(\sum_{j \in N(i) \cup \{i\}} \frac{1}{\sqrt{\deg(i)\,\deg(j)}}\,W^{(l+1)} z_j^{(l)}\right)
+\label{eq:gcn}
+\end{equation}
+ここで，$z_i^{(l)}$は$l$層目におけるノード$i$の特徴ベクトル，$N(i)$は$i$の隣接ノード集合，$\deg(i)$はノード$i$の次数，$W^{(l+1)}$は学習パラメータ，$\phi$は活性化関数である．
+
+\section{方法}
+本研究では，FEM由来DSPSSによる事前学習と，赤外線応力測定により取得したDSPSSによるファインチューニングを組み合わせた二段階転移学習\cite{kojima2025_transfer}を，GNNベースの欠陥推定モデル\cite{nishioka2024_bthesis}に適用する．提案手法の全体構成を\figref{fig:flow}に示す．
+
+\subsection{FEM由来データの生成}
+学習データのDSPSSは，CFRP積層板を有限要素メッシュに離散化し，欠陥を含む条件下で弾性解析を行うことで取得する．層間剝離はせん断応力が伝播しない状態を再現するため，剝離面を構成する節点に二重節点を割り当てて表現する\cite{kojima2025_transfer}．荷重条件には赤外線応力測定を模した一方向引張を与え，欠陥の挿入位置・サイズ・挿入層を変えた多数の条件を設定することで，学習データの多様性を確保する．取得したDSPSSには，赤外線応力測定で観測される熱ノイズや樹脂と炭素繊維束の物性差に由来する模様を模倣する人工ノイズを付与する．
+
+\subsection{赤外線応力測定の実験条件}
+ファインチューニング用のDSPSSは，単純形状のCFRP積層板に対する赤外線応力測定により取得する．試験片は一方向強化複合材を擬似等方に積層した構成とし，欠陥として層間にテフロンシートを挿入したものと挿入しないものを用意する．実験装置は疲労試験装置と赤外線カメラで構成され(\figref{fig:equipment})，正弦波の繰り返し引張荷重を加えながら，2.1で述べた手法で試験片表面のDSPSSを取得する．
+
+\begin{figure}[h!]
+\setlength\abovecaptionskip{1truemm}
+\centering
+\includegraphics[width=0.32\linewidth]{figures/experiment.pdf}
+\caption{Equipment used in infrared stress measurement.}
+\label{fig:equipment}
+\end{figure}
+
+\subsection{GNN欠陥推定モデルと二段階転移学習}
+欠陥推定モデルには，FEMメッシュの節点を頂点・要素隣接をエッジとしたグラフを入力とするGNNを用い，各節点のDSPSSを入力特徴量として欠陥クラス(あり/なし)と挿入層を推定する．学習は二段階で運用し，第一段階では人工ノイズを付与したFEM由来DSPSSでGNN全体を学習，第二段階では事前学習済みモデルに対し少量の赤外線応力測定DSPSSで出力層側のパラメータを再学習する．評価には平面位置一致率と挿入層一致率を導入し，FEMのみで学習したモデルとの比較を通じて転移学習の効果を検証する方針とする．
+
+\section{今後の予定}
+短期的には，単純形状CFRP積層板を対象に，3章で示したGNNと二段階転移学習による欠陥推定モデルを構築する．Kojimaら既存の赤外線応力測定データと新規FEM解析データを学習に用い，平面位置一致率$R$と挿入層一致率$P$で推定精度を評価する．同条件の下でCNNベース手法\cite{kojima2025_transfer}と比較し，GNN採用による優位性を評価する．
+
+中期的には，穴あき試験片など不規則メッシュ形状への検証展開と必要に応じた追加実験を通じて，提案手法の汎用性を評価する．これは，段間構造や衛星フェアリングのような複雑形状を持つ宇宙輸送機器の検査基盤への展開を見据えた基礎的検証と位置付けられる．
+
+
+\bibliographystyle{unsrt}
+\bibliography{references}
+\end{document}

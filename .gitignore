@@ -1,0 +1,21 @@
+*.synctex.gz
+.DS_Store
+tmp/
+references/
+doc/progress.md
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.bcf
+*.run.xml
+*.xdv
